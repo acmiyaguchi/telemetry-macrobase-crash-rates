@@ -1,4 +1,33 @@
 # Data
+## crash_rates postgres image
+
+This directory contains a dockerfile for building a postgres image with crash_rates data.
+
+```
+$ aws s3 cp s3://net-mozaws-prod-us-west-2-pipeline-analysis/amiyaguchi/macrobase/crash_rates.csv .
+$ docker build . -t postgres-crash-rates
+$ docker run --rm -P --name crash-rates-db postgres-crash-rates
+```
+
+`--rm` deletes the container on exit. `-P` exposes the docker port and maps it to a local port. Running `docker ps` shows this mapping.
+```
+$ docker ps
+CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS                         PORTS                     NAMES
+49e2dc825e66        postgres-crash-rates         "docker-entrypoint..."   0 minutes ago       Up 0 minutes                   0.0.0.0:32772->5432/tcp   crash-rates-db
+```
+
+A local postgres client (`psql`) can be attached to this instance.
+```
+$ psql -h localhost -p 327772 -U postgres
+postgres-# \dt
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | crash_rates | table | postgres
+(1 row)
+
+postgres-# SELECT * FROM crash_rates LIMIT 10
+```
 
 ## `crash_rates.v1`
 
